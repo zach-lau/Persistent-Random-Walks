@@ -59,9 +59,10 @@ def theory_te(a_up, a_down, f=2):
     p = end_probs(a_up, a_down) # probability of reaching the end first
     pup = p[1] # chance of making it to last level before coming back
     pdown = 1-p[-2] # chance of making it down before coming back
-    ev = f*pup/pdown # bernouilli x geometric
-    ev2 = (f**2)*pup*(1/pdown**2 + (1-pdown)/pdown**2)
-    return ev**2/ev2
+    # ev = f*pup/pdown # bernouilli x geometric
+    # ev2 = (f**2)*pup*(1/pdown**2 + (1-pdown)/pdown**2)
+    # return ev**2/ev2
+    return pup/(2-pdown) # s    
 
 def test():
     
