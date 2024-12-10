@@ -4,7 +4,7 @@ on transition probabilities
 """
 
 import numpy as np
-from test import Test
+from mytest import Test
 
 # def _stationary_probs_helper(a_up, a_down, ans, i, j, total_mass):
 #     """Recursive helper for stationary probs that solves for the chain
@@ -99,4 +99,3 @@ def test():
 
 if __name__ == "__main__":
     test()
-    
