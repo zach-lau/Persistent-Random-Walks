@@ -58,3 +58,34 @@ htmlcov/
 # Other tools
 pytest_cache/
 .cache/
+
+# Latex files
+# LaTeX intermediate and log files
+*.aux
+*.log
+*.toc
+*.out
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.blg
+*.bbl
+
+# Build files
+*.dvi
+*.pdf
+*.ps
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Other LaTeX tools
+*.nav
+*.snm
+*.vrb
+*.xdv
