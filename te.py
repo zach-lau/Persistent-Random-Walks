@@ -50,18 +50,41 @@ def end_probs(a_up, a_down):
     P[:,-2] = 0 # dont double count tranisitions into target
     return np.linalg.solve(np.eye(2*n)-P,b)
 
+def top_bottom_probs(a_up, a_down):
+    x = end_probs(a_up, a_down)
+    pup = x[1]
+    pdown = 1-x[-1]
+    return (pup, pdown)
+
+def fast_tb_probs(a_up, a_down):
+    # Calculate the probability of transitions up and down 
+    n = len(a_up)
+    assert(n > 1)
+    assert(len(a_down) == n)
+    pdinv = 1/a_down[1]
+    # Start at the bottom and work up
+    for i in range(2,n):
+        pdinv = a_up[i-1]/a_down[i]*((1-a_up[i-1])/a_up[i-1]+pdinv)
+    # Start at the to and work down
+    puinv = 1/a_up[n-2]
+    for j in range(n-3,-1,-1): # work down to 0
+        puinv = a_down[j+1]/a_up[j]*((1-a_down[j+1])/a_down[j+1]+puinv)    
+
+    return (1/puinv, 1/pdinv)
+
 def theory_te(a_up, a_down, f=2):
     """
     Find the theoritcal te for given acceptance rates
 
     f = 2 for nrst and 1 for st
     """
-    p = end_probs(a_up, a_down) # probability of reaching the end first
-    pup = p[1] # chance of making it to last level before coming back
-    pdown = 1-p[-2] # chance of making it down before coming back
+    # p = end_probs(a_up, a_down) # probability of reaching the end first
+    # pup = p[1] # chance of making it to last level before coming back
+    # pdown = 1-p[-2] # chance of making it down before coming back
     # ev = f*pup/pdown # bernouilli x geometric
     # ev2 = (f**2)*pup*(1/pdown**2 + (1-pdown)/pdown**2)
     # return ev**2/ev2
+    pup, pdown = fast_tb_probs(a_up, a_down)
     return pup/(2-pdown) # s    
 
 def test():
@@ -81,6 +104,17 @@ def test():
         Test("", np.allclose, theory_te([1,1,0],[0,1,1]), 1),
         # We also know the answer for the symmetric case
         Test("Symmetric", np.allclose,theory_te([0.5,0.5,0],[0,0.5,0.5]),.2),
+        # Isolate top and bottom probs
+        Test("Top bottom", np.allclose, top_bottom_probs([1,1,0],[0,1,1]), (1,1)),
+        # Fast version
+        Test("Deterministic",
+             np.allclose, fast_tb_probs([1,1,0],[0,1,1]), (1,1)),
+        Test("Matches with full solution", np.allclose,
+             fast_tb_probs([0.5,0.3,0],[0,0.7,0.8]),
+             top_bottom_probs([0.5,0.3,0],[0,0.7,0.8])),
+        Test("Big test", np.allclose,
+             fast_tb_probs([0.5,0.5,0.5,0.5,0.3,0],[0,0.7,0.7,0.7,0.7,0.8]),
+             top_bottom_probs([0.5,0.5,0.5,0.5,0.3,0],[0,0.7,0.7,0.7,0.7,0.8])),
     ]
     for i,t in enumerate(tests):
         print(f"[{i+1}/{len(tests)}] ({t.get_description()})")
