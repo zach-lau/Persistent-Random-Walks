@@ -11,4 +11,96 @@
 \begin{document}
 \maketitle
 
+\section{Generalized shortcut for TE}
+In Birron-Lattes et al, they present a formula for the TE in the case of uniform
+level affinities. With $p$ the probability that a tour reaches the top-level, we
+have \[ \text{TE} = \frac{p}{2-p}\].
+
+We breifly reproduce this result with application to possibly assymetric
+persistent random walks, and by extension non-uniform level affinities.
+
+Claim: the TE for an assymetric random walk is given by \[ \text{TE} =
+\frac{p_u}{2-p_d} \]
+Where $p_u$ is the probability that a tour reaches the top-level, and $p_d$ is
+the probability that starting at the top-level, the $0$-th leve is visited
+before the top-level is visited again. I.e. it is the $p_u$ of the mirror
+process where the level order is reversed.
+
+\begin{proof}
+The number of visits to the top level can be expressed as \[ v \overset{d}{=} RUF \]
+where \begin{itemize}
+    \item $R$ is Bernouilli with rate $p_u$
+    \item $U$ is $\text{Geom1}$ with rate $p_d$
+    \item $F$ is a constant that is $2$ for NRST and $1$ for $ST$ to account for
+    the fact that $NRST$ deterministically visits the top-level twice.
+\end{itemize}
+and $R$ and $U$ are independent. With $v$ as the number of visits to the target
+during the tour we find
+\begin{align*}
+\mathbb E[v] &= \frac{p_u}{p_d}F \\
+\end{align*}
+and 
+\begin{align*}
+\mathbb E[v^2] &= p_u \left(\frac{1}{p_d^2}+\frac{1-p_d}{p_d^2}\right) F^2 \\
+&= \frac{F^2p_u(2-p_d)}{p_d^2}
+\end{align*}
+Therefore
+\begin{align*}
+\text{TE} &= \frac{E[v]^2}{E[v^2]} \\
+&= \frac{p_u}{2-p_d}
+\end{align*}
+\end{proof}
+In the case $p_u = p_d = p$ we confirm that this reduces to the symmetric case.
+
+\section{Recursive formula for top bottom transition probabilities in NRST}
+We present here a recursive formula for the top-bottom transition probabilities.
+Denote the forward transition probabilities from $i$ to $i+1$ by $\alpha_i$ and 
+reverse transition probabilities from $i+1$ to $i$ of $\alpha'_i$ with rejection
+probabilities $\rho_i = 1-\alpha_i$ and $\rho'_i = 1-\alpha'_i$. Denote the 
+probability of returning to the base layer from state $(i,-1)$ before returning
+to layer $i$ by $p_i$. We claim that $p_i$ can be recursively calculated from
+\begin{align*}
+    p_1 &= \alpha'_0 \\
+    \frac{1}{p_{i+1}} &=
+    \frac{\alpha_i}{\alpha'_i}\left(\frac{\rho_i}{\alpha_i}+\frac{1}{p_i}\right)
+\end{align*}
+\begin{proof}
+    From the state $(i+1,-1)$ in order to level $0$ before reaching level $i+1$
+    again we require the following to happen \begin{itemize}
+        \item The proposal to move to $(i,-1)$ is accepted
+        \item From $(i,-1)$ we reach level $0$ before reaching level $i+1$ again
+    \end{itemize}
+    The first step will happen with probability $\alpha'_i$. For the second
+    event we consider the sequence of round-trips starting and ending at $(i,-1)$.
+    For each round trip we have to consider the mutually exclusive events \begin{itemize}
+        \item A: it reaches $0$
+        \item B: it doesn't reach $0$ and it reaches $i+1$
+    \end{itemize}
+    Any return to level $i$ necessarily starts a new round trip. Thus the first
+    event is exactly the event that from $i$ level $0$ is reached before $i$ is
+    reached again. This is exactly our recursive event of interest. Thus 
+    $P(A)=\alpha'_i p_i$.  Any round trip that does not reach $0$ will reach
+    level $i$ exactly once. From this state, it will reach level $i+1$ with
+    probability $\alpha_i$. We get $P(B)=(1-p_i)\alpha_i$. These two events are
+    mutually exclusive. Therefore the probability that $A$ occurs before $B$
+    is \begin{align*}
+        p_{i+1} &= \frac{P(A)}{P(A)+P(B)} \\
+        &= \frac{\alpha'_i p_i}{p_i+(1-p_i)\alpha_i} \\
+        &= \frac{\frac{\alpha'_i}{\alpha_i}}{\frac{\rho_i}{\alpha_i}+\frac{1}{p_i}} \\
+        \frac{1}{p_{i+1}} &=
+        \frac{\alpha_i}{\alpha'_i}\left(\frac{\rho_i}{\alpha_i}+\frac{1}{p_i}\right)
+    \end{align*}
+\end{proof}
+Importantly when $\alpha_i=\alpha_i'$ we see that
+\[ \frac{1}{\rho_{i+1}} = \frac{\rho_i}{\alpha_i}+\frac{1}{\rho_i} \]
+And we recover the expression for the symmetric case. 
+\begin{align*}
+    \frac{1}{p} &= \frac{1}{\alpha_0} + \sum_{i=1}^{N-1} \frac{\rho_i}{\alpha_i} \\
+    &= \frac{\alpha_0+\rho_0}{\alpha_0} +  \sum_{i=1}^{N-1} \frac{\rho_i}{\alpha_i} \\
+    &= 1+ \sum_{i=0}^{N-1} \frac{\rho_i}{\alpha_i}
+\end{align*} 
+The same recursion formula can be used to easily find the probability that a
+tour reaches the target level using the mirrored chain. These two probabilities
+together directly give the tour effectiveness.
+
 \end{document}
