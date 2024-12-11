@@ -64,11 +64,13 @@ def fast_tb_probs(a_up, a_down):
     pdinv = 1/a_down[1]
     # Start at the bottom and work up
     for i in range(2,n):
-        pdinv = a_up[i-1]/a_down[i]*((1-a_up[i-1])/a_up[i-1]+pdinv)
+        # pdinv = a_up[i-1]/a_down[i]*((1-a_up[i-1])/a_up[i-1]+pdinv)
+        pdinv = a_up[i-1]/a_down[i]*pdinv + (1-a_up[i-1])/a_down[i]
     # Start at the to and work down
     puinv = 1/a_up[n-2]
     for j in range(n-3,-1,-1): # work down to 0
-        puinv = a_down[j+1]/a_up[j]*((1-a_down[j+1])/a_down[j+1]+puinv)    
+        # puinv = a_down[j+1]/a_up[j]*((1-a_down[j+1])/a_down[j+1]+puinv)    
+        puinv = a_down[j+1]/a_up[j]*puinv + (1-a_down[j+1])/a_up[j] 
 
     return (1/puinv, 1/pdinv)
 
