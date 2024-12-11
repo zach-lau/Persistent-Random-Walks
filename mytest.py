@@ -10,11 +10,16 @@ class Test():
     def get_description(self):
         return self.description
     def check(self):
-        val = self.function(*self.args)
+        try:
+            val = self.function(*self.args)
+        except Exception as e:
+            print("\033[31mFail\033[0m")
+            print(e)
+            return False
         if not val:
-            print(f"Failed with args {','.join([str(x) for x in self.args])}")
+            print(f"\033[31mFailed with args {','.join([str(x) for x in self.args])}\033[0m")
         else:
-            print("Pass")
+            print("\033[32mPass\033[0m")
         return val
 
 def my_add(a,b):
