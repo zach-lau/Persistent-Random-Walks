@@ -140,4 +140,68 @@ to the familiar \[ \frac{1}{p_n} = 1+\sum_{i=1}^n \frac{\rho_i}{\alpha_i}\]
 In particular, the assymetric case is simply a weighted version of the symmetric
 case.
 
+\section{Recursive formula for top-bottom transition probabilities in reversible
+simulated tempering}
+We now present a recursive formula for the downward transition probabilities in
+reversible simulated tempring. In the absence of momentum we model the Markov
+chain with the symmetric proposal which proposes to go up with probability $1/2$
+and down with probability with $1/2$. The acceptance rates remain the same, thus
+we get transition probabilites
+\begin{itemize}
+    \item $P_{i,i+1} = \frac{\alpha_i}{2}$
+    \item $P_{i+1,i} = \frac{\alpha'_i}{2}$
+    \item $P_{i,i} = \frac{\rho_i+\rho'_i}{2}$
+\end{itemize}
+where $i$ indicates the level. Denote by $p_i$ the probability that starting
+from level $i$ the bottom level is reached before level $i$ is reached again.
+We claim that the $p_i$ can be recursively calculated by
+\[ \frac{1}{p_{i+1}} =
+\frac{\alpha_i}{\alpha'_i}\left(2+2\frac{\rho_i}{\alpha_i} +
+\frac{1}{p_i}\right)\]
+And in the base case $\frac{1}{p_1} = 2+2\frac{\rho'_0}{\alpha'_0}$
+
+\begin{proof}
+We start with the base case. Any transition from level $1$ which does not visit
+level $0$ will necessarily lead to another visit to level $1$ before a visit to
+level $0$. Thus from the transition probabilities
+\begin{align*}
+p_1 &= \frac{\alpha'_0}{2} \\
+\frac{1}{p_1} &= \frac{2}{\alpha'_0} \\
+&= \frac{2(\alpha'_0+\rho'_0)}{\alpha'_0} \\
+&= 2 + 2\frac{\rho'_0}{\alpha'_0}
+\end{align*}
+
+Next consider the recursive step. From level $i+1$ to visit the base level
+before revisiting $i+1$, we need the following to happen 
+\begin{enumerate}
+    \item Transition immediatley to level $i$
+    \item Transition from level $i$ to the base level before transition back to
+    level $i+1$
+\end{enumerate}
+The first event occurs with probability $\alpha'_i/2$. For the second event we
+consdir each round-trip starting at level $i$ and ending at level $i$. One
+of two mutually exclusive events may occurs
+\begin{enumerate}
+    \item $A$: we visit level $0$
+    \item $B$: we visit level $i+1$
+\end{enumerate}
+The probability of the first event is simply $p_i$. The probablity of the second
+event is just the transition probability $\frac{\alpha_i}{2}$. Theefore the
+probability that $A$ occurs before $B$ is 
+\begin{align*}
+\frac{P(A)}{P(A)+P(B)} &= \frac{p_i}{\alpha_{i}/2 + p_i}
+\end{align*}
+These two events must occur sequentially so we find 
+\begin{align*}
+p_{i+1} &= \frac{\alpha'_i}{2}\left(\frac{p_i}{p_i+\frac{\alpha_i}{2}}\right) \\
+&= \frac{\alpha'_i}{\alpha_i}\left(\frac{1}{\frac{2}{\alpha_i}+\frac{1}{p_i}}\right) \\
+\frac{1}{p_{i+1}}&= \frac{\alpha_i}{\alpha'_i}\left(\frac{2}{\alpha_i}+\frac{1}{p_i}\right) \\
+&= \frac{\alpha_i}{\alpha'_i}\left(2+2\frac{\rho_i}{\alpha_i}+\frac{1}{p_i}\right) \\ 
+\end{align*}
+\end{proof}
+
+\section{Expanded formula for top-bottom transition probabilites in simulated
+tempering}
+
+
 \end{document}
