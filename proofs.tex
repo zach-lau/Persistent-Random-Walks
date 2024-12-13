@@ -106,32 +106,32 @@ together directly give the tour effectiveness.
 \section{Expanded Formula for top bottom transition probabilities in NRST}
 Based on the recursive formula above we expand the expression for $p_{n-1}$, the
 top-bottom transition probability from the top-level to the base level. Claim:
-Denote (for lack of a better letter) by $a_i$ the marginal probability of being
+Denote (for lack of a better letter) by $\gamma_i$ the marginal probability of being
 in level $i$ Then
-\[ \frac{1}{p_{n}} 
-= \frac{a_n}{a_0} + a_{n}\sum_{i=0}^{n-1} \frac{1}{a_i}\frac{\rho_i}{\alpha_i} \]
+\[ \frac{1}{p_{n}} = \frac{\gamma_n}{\gamma_0} + a_{n}\sum_{i=0}^{n-1}
+\frac{1}{\gamma_i}\frac{\rho_i}{\alpha_i} \]
 
 \begin{proof}
-    From the mass balance equation we know that $a_i \alpha_i = a_{i+1}\alpha'_i$.
+    From the mass balance equation we know that $\gamma_i \alpha_i = \gamma_{i+1}\alpha'_i$.
     Plugging this into our recursion above we find 
     \[ \frac{1}{p_{i+1}} 
-    = \frac{a_{i+1}}{a_i} \left(\frac{\rho_i}{\alpha_i} + \frac{1}{p_i}\right)\]
+    = \frac{\gamma_{i+1}}{\gamma_i} \left(\frac{\rho_i}{\alpha_i} + \frac{1}{p_i}\right)\]
     We proceed by induction. In the base case when $n=1$ we have 
     \begin{align*}
         \frac{1}{p_1} &= \frac{1}{\alpha'_0} \\
-        &= \frac{a_1}{a_0}\frac{1}{\alpha_0} \\
-        &= \frac{a_1}{a_0}\left(1+\frac{\rho_0}{\alpha_0}\right) \\
-        &= \frac{a_1}{a_0} + \frac{a_1}{a_0}\frac{\rho_0}{\alpha_0}
+        &= \frac{\gamma_1}{\gamma_0}\frac{1}{\alpha_0} \\
+        &= \frac{\gamma_1}{\gamma_0}\left(1+\frac{\rho_0}{\alpha_0}\right) \\
+        &= \frac{\gamma_1}{\gamma_0} + \frac{\gamma_1}{\gamma_0}\frac{\rho_0}{\alpha_0}
     \end{align*}
     Now we assume our induction hypothesis is true for $1 < k \leq n$ and apply
     the recursion
     \begin{align*}
     \frac{1}{p_{k+1}}\
-    &= \frac{a_{k+1}}{a_k}\left(\frac{\rho_k}{\alpha_k}+\frac{1}{p_k}\right) \\
-    &= \frac{a_{k+1}}{a_k}\frac{\rho_k}{\alpha_k} + 
-    \frac{a_{k+1}}{a_k}
-    \left(\frac{a_k}{a_0}+a_k\sum_{i=0}^{k-1}\frac{1}{a_i}\frac{\rho_i}{\alpha_i}\right) \\
-    &= \frac{a_{k+1}}{a_0} + a_{k+1}\sum_{i=0}^k \frac{1}{a_i}\frac{\rho_i}{\alpha_i}
+    &= \frac{\gamma_{k+1}}{\gamma_k}\left(\frac{\rho_k}{\alpha_k}+\frac{1}{p_k}\right) \\
+    &= \frac{\gamma_{k+1}}{\gamma_k}\frac{\rho_k}{\alpha_k} + 
+    \frac{\gamma_{k+1}}{\gamma_k}
+    \left(\frac{\gamma_k}{\gamma_0}+\gamma_k\sum_{i=0}^{k-1}\frac{1}{\gamma_i}\frac{\rho_i}{\alpha_i}\right) \\
+    &= \frac{\gamma_{k+1}}{\gamma_0} + \gamma_{k+1}\sum_{i=0}^k \frac{1}{\gamma_i}\frac{\rho_i}{\alpha_i}
     \end{align*}
     This completes our inductive step and the proof is complete.
 \end{proof}
