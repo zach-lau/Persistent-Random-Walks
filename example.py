@@ -116,6 +116,13 @@ def optimize_grid():
             zs[j,i] = te.theory_te(alpha[0,],alpha[1,])
     cs = plt.contour(xs, ys, zs)
     plt.clabel(cs)
+    uniform_point = (-0.757, -0.986)
+    optimal_point = (0, -1.151)
+    plt.plot(*uniform_point, 'ro')
+    plt.plot(*optimal_point, 'bo')
+    plt.xlabel("c1-c0")
+    plt.ylabel("c2-c1")
+    plt.legend(["Uniform", "Optimal"])
     plt.show()
 
 def optimize_test():
@@ -175,7 +182,6 @@ def explore_optimized_region():
 if __name__ == "__main__":
     unit_test()
     # graph()
-    optimize_grid() # returns near (0,1)
     # two_layer_test([0,0]) # 0.744
     # two_layer_test([-0.303, -0.055]) # 0.712
     # two_layer_test([0,0], a = 10) # 0.548
@@ -184,4 +190,5 @@ if __name__ == "__main__":
     # n_layer_test(10) # 0.744
     optimize_test() # gives best result at 0, -1.151 with value 0.619
     explore_optimized_region()
-    find_uniform_affinities()
+    find_uniform_affinities() # -0.757, -0.986
+    optimize_grid()
