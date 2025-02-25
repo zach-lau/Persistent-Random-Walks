@@ -75,13 +75,13 @@ def fast_tb_probs(a_up, a_down, f=2):
     n = len(a_up)
     assert(n > 1)
     assert(len(a_down) == n)
-    pdinv = 1/a_down[1]
+    pdinv = 1/a_down[1]*k1
     # Start at the bottom and work up
     for i in range(2,n):
         # pdinv = a_up[i-1]/a_down[i]*((1-a_up[i-1])/a_up[i-1]+pdinv)
         pdinv = a_up[i-1]/a_down[i]*(pdinv+k0) + (1-a_up[i-1])/a_down[i]*k1
     # Start at the to and work down
-    puinv = 1/a_up[n-2]
+    puinv = 1/a_up[n-2]*k1
     for j in range(n-3,-1,-1): # work down to 0
         # puinv = a_down[j+1]/a_up[j]*((1-a_down[j+1])/a_down[j+1]+puinv)    
         puinv = a_down[j+1]/a_up[j]*(puinv+k0) + (1-a_down[j+1])/a_up[j]*k1
@@ -111,7 +111,8 @@ def test():
     # print(end_probs([0.5,0.5,0],[0,0.5,0.5]))
     # print(theory_te([0.5,0.5,0],[0,0.5,0.5])) # we know from the symmetric case we have 0.2
     # print(theory_te([1,1,0],[0,1,1])) # should be 1 for a deterministic walk
-    # print(theory_te([1,1,0],[0,1,1],1)) # pup = pdown = 1/4, should be 1/5
+    # print(theory_te([1,1,0],[0,1,1],1)) # pup = pdown = 1/4, should get 1/7
+    # print(fast_tb_probs([1,1,0],[0,1,1],f=1))
 
     tests = [
         # 2x2 case is easy
@@ -132,7 +133,9 @@ def test():
         Test("Big test", np.allclose,
              fast_tb_probs([0.5,0.5,0.5,0.5,0.3,0],[0,0.7,0.7,0.7,0.7,0.8]),
              top_bottom_probs([0.5,0.5,0.5,0.5,0.3,0],[0,0.7,0.7,0.7,0.7,0.8])),
-        Test("ST", np.allclose,theory_te([1,1,0],[0,1,1],1),0.2)
+        Test("ST", np.allclose,theory_te([1,1,0],[0,1,1],1),1/7),
+        Test("ST probs", np.allclose,
+             fast_tb_probs([1,1,0],[0,1,1],f=1), [1/4, 1/4]),
     ]
     for i,t in enumerate(tests):
         print(f"[{i+1}/{len(tests)}] ({t.get_description()})")
