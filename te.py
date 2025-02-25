@@ -56,7 +56,21 @@ def top_bottom_probs(a_up, a_down):
     pdown = 1-x[-1]
     return (pup, pdown)
 
-def fast_tb_probs(a_up, a_down):
+def fast_tb_probs(a_up, a_down, f=2):
+    """
+    a_up: upwards transition acceptance rates
+    a_down: downwarsd transition acceptance rates
+    f: nrst or st. 1 for st 2 for nrst
+    """
+    # Coefficients for nrst vs st
+    if f==1:
+        k0 = 2 # constant
+        k1 = 2
+    elif f==2:
+        k0 = 0
+        k1 = 1
+    # TODO deal with invalid f values
+
     # Calculate the probability of transitions up and down 
     n = len(a_up)
     assert(n > 1)
@@ -65,18 +79,18 @@ def fast_tb_probs(a_up, a_down):
     # Start at the bottom and work up
     for i in range(2,n):
         # pdinv = a_up[i-1]/a_down[i]*((1-a_up[i-1])/a_up[i-1]+pdinv)
-        pdinv = a_up[i-1]/a_down[i]*pdinv + (1-a_up[i-1])/a_down[i]
+        pdinv = a_up[i-1]/a_down[i]*(pdinv+k0) + (1-a_up[i-1])/a_down[i]*k1
     # Start at the to and work down
     puinv = 1/a_up[n-2]
     for j in range(n-3,-1,-1): # work down to 0
         # puinv = a_down[j+1]/a_up[j]*((1-a_down[j+1])/a_down[j+1]+puinv)    
-        puinv = a_down[j+1]/a_up[j]*puinv + (1-a_down[j+1])/a_up[j] 
+        puinv = a_down[j+1]/a_up[j]*(puinv+k0) + (1-a_down[j+1])/a_up[j]*k1
 
     return (1/puinv, 1/pdinv)
 
 def theory_te(a_up, a_down, f=2):
     """
-    Find the theoritcal te for given acceptance rates
+    Find the theoretical te for given acceptance rates
 
     f = 2 for nrst and 1 for st
     """
@@ -86,7 +100,7 @@ def theory_te(a_up, a_down, f=2):
     # ev = f*pup/pdown # bernouilli x geometric
     # ev2 = (f**2)*pup*(1/pdown**2 + (1-pdown)/pdown**2)
     # return ev**2/ev2
-    pup, pdown = fast_tb_probs(a_up, a_down)
+    pup, pdown = fast_tb_probs(a_up, a_down, f)
     return pup/(2-pdown) # s    
 
 def test():
@@ -97,6 +111,7 @@ def test():
     # print(end_probs([0.5,0.5,0],[0,0.5,0.5]))
     # print(theory_te([0.5,0.5,0],[0,0.5,0.5])) # we know from the symmetric case we have 0.2
     # print(theory_te([1,1,0],[0,1,1])) # should be 1 for a deterministic walk
+    # print(theory_te([1,1,0],[0,1,1],1)) # pup = pdown = 1/4, should be 1/5
 
     tests = [
         # 2x2 case is easy
@@ -117,6 +132,7 @@ def test():
         Test("Big test", np.allclose,
              fast_tb_probs([0.5,0.5,0.5,0.5,0.3,0],[0,0.7,0.7,0.7,0.7,0.8]),
              top_bottom_probs([0.5,0.5,0.5,0.5,0.3,0],[0,0.7,0.7,0.7,0.7,0.8])),
+        Test("ST", np.allclose,theory_te([1,1,0],[0,1,1],1),0.2)
     ]
     for i,t in enumerate(tests):
         print(f"[{i+1}/{len(tests)}] ({t.get_description()})")

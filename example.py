@@ -56,7 +56,7 @@ def n_layer_test(n):
 
 # Optimization tests
 
-def contour_plot(uniform_point, optimal_point, a = 10, k = 10):
+def contour_plot(uniform_point, optimal_point, a = 10, k = 10, f=2):
     """
     Show a contour plot for the two layer multimodal example
     """
@@ -69,7 +69,7 @@ def contour_plot(uniform_point, optimal_point, a = 10, k = 10):
     for i,x in enumerate(xs):
         for j,y in enumerate(ys):
             alpha = find_alphas([x,y], a, k, betas)
-            zs[j,i] = te.theory_te(alpha[0,],alpha[1,])
+            zs[j,i] = te.theory_te(alpha[0,],alpha[1,], f)
     cs = plt.contour(xs, ys, zs)
     plt.clabel(cs)
     # uniform_point = (-0.757, -0.986)
@@ -81,24 +81,28 @@ def contour_plot(uniform_point, optimal_point, a = 10, k = 10):
     plt.legend(["Uniform", "Optimal"])
     plt.show()
 
-def optimize_two_layer(a=10, k=10, betas=[0, 0.5, 1]):
+def optimize_two_layer(a=10, k=10, betas=[0, 0.5, 1], f=2):
     """
     Find the optimal parametrs in the two layer case
     """
     print("=== Optimizing in the two layer case ===")
     dcs = [-1,-2] # starting point
-    def f(x):
+    def get_te(x):
         alpha = find_alphas(x, a, k, betas)
-        tour_eff = te.theory_te(alpha[0,],alpha[1,])
+        tour_eff = te.theory_te(alpha[0,],alpha[1,], f)
         return tour_eff
     # Nelder-mead often flops
     # res = minimize(lambda x : -f(x), dcs, method="Nelder-Mead")
     # Default is BFGS : performs reasonably well in this case
-    res = minimize(lambda x : -f(x), dcs)
+    res = minimize(lambda x : -get_te(x), dcs)
     print(res)
     return res.x
 
 def find_uniform_affinities(a=10, k=10, betas=[0, 0.5, 1]):
+    """
+    Find acceptance rates for uniform level affinities. This should be the
+    same for NRST and ST
+    """
     print("==== Beginning calculation for uniform affinity tuning params === ")
     # We could solve a systme of equations, but its easier to just match
     # upwards and dowanrds rates if we know them
@@ -113,7 +117,7 @@ def find_uniform_affinities(a=10, k=10, betas=[0, 0.5, 1]):
         cs[i] = fsolve(f, -1)[0]
     return cs
 
-def explore_optimized_region(dcs, a=10, k=10, betas = [0, 0.5, 1]):
+def explore_optimized_region(dcs, a=10, k=10, betas = [0, 0.5, 1], f=2):
     """
     Exploring optimized region
     """
@@ -122,7 +126,7 @@ def explore_optimized_region(dcs, a=10, k=10, betas = [0, 0.5, 1]):
     print(f"The acceptance rates are: {alphas}")
     sprobs = stationary.stationary_probs(alphas[0,], alphas[1,]).sum(axis=0)
     print(f"The level affinities are: {sprobs}") # these are non statinoary!
-    myte = te.theory_te(alphas[0,], alphas[1,])
+    myte = te.theory_te(alphas[0,], alphas[1,],f)
     print(f"The te is: {myte}")
 
 if __name__ == "__main__":
@@ -135,8 +139,16 @@ if __name__ == "__main__":
     # print(two_layer_test([0, -1], a = 10)) # 0.596
 
     # n_layer_test(10) # 0.744
-    optimal_dcs = optimize_two_layer() # gives best result at 0, -1.151 with value 0.619
-    explore_optimized_region(optimal_dcs)
+    
+    # First for NRST
+    optimal_nrst = optimize_two_layer() # gives best result at 0, -1.151 with value 0.619
+    explore_optimized_region(optimal_nrst)
     uniform_dcs = find_uniform_affinities() # -0.757, -0.986
     explore_optimized_region(uniform_dcs)
-    contour_plot(uniform_dcs, optimal_dcs)
+    contour_plot(uniform_dcs, optimal_nrst)
+
+    # Then for ST
+    optimal_st = optimize_two_layer(f=1) # gives best result at 8.88, 4.3?
+    explore_optimized_region(optimal_st, f=1)
+    explore_optimized_region(uniform_dcs, f=1)
+    contour_plot(uniform_dcs, optimal_st, f=1)
